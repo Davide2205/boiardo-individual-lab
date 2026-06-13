@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0b2014" />
+<title>Prenotazione · Boiardo Individual Lab</title>
+<meta name="description" content="Prenota il tuo posto al Boiardo Individual Lab, l'academy calcio estiva di allenamento individuale. Compila il modulo e conferma su WhatsApp." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green-900: #0b2014;
+    --green-800: #102b1b;
+    --green-700: #163a25;
+    --green-600: #1c4a30;
+    --green-500: #2a6344;
+    --gold-500: #c9a227;
+    --gold-400: #d8b53f;
+    --gold-300: #e7cf7a;
+    --cream: #f7f4ea;
+    --ink: #11261a;
+    --muted: #6a7d70;
+    --line: #e2ddcd;
+    --danger: #c0392b;
+    --radius: 16px;
+    --shadow: 0 18px 50px rgba(11, 32, 20, 0.18);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, var(--green-600) 0%, var(--green-800) 45%, var(--green-900) 100%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  /* ---------- Header ---------- */
+  .hero { text-align: center; color: var(--cream); padding: 8px 6px 22px; }
+
+  .crest {
+    width: 76px; height: 76px; margin: 0 auto 14px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(160deg, var(--gold-300), var(--gold-500));
+    box-shadow: 0 10px 26px rgba(201, 162, 39, 0.35), inset 0 0 0 4px rgba(11, 32, 20, 0.18);
+    font-size: 34px;
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold-300); font-weight: 600;
+    border: 1px solid rgba(231, 207, 122, 0.4);
+    padding: 5px 12px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 7vw, 34px);
+    margin: 0 0 8px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 .gold { color: var(--gold-400); }
+
+  .hero p { margin: 0 auto; max-width: 320px; color: rgba(247, 244, 234, 0.82); font-size: 15px; }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--cream);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 18px 24px;
+    margin-top: 18px;
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  .card h2 {
+    font-family: "Poppins", sans-serif;
+    font-size: 18px; margin: 2px 0 4px; color: var(--green-700);
+  }
+  .card .lead { margin: 0 0 18px; font-size: 13.5px; color: var(--muted); }
+
+  .field { margin-bottom: 16px; }
+
+  label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--green-700); margin-bottom: 6px;
+  }
+  label .req { color: var(--danger); }
+  label .opt { color: var(--muted); font-weight: 500; }
+
+  input, select, textarea {
+    width: 100%;
+    font-family: inherit; font-size: 16px; color: var(--ink);
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 13px;
+    transition: border-color .15s, box-shadow .15s;
+    appearance: none;
+  }
+  textarea { resize: vertical; min-height: 72px; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231c4a30' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    padding-right: 38px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green-500);
+    box-shadow: 0 0 0 3px rgba(42, 99, 68, 0.16);
+  }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* consent */
+  .consent {
+    display: flex; gap: 11px; align-items: flex-start;
+    background: #fff; border: 1.5px solid var(--line);
+    border-radius: 12px; padding: 12px 13px;
+  }
+  .consent input[type="checkbox"] {
+    width: 22px; height: 22px; min-width: 22px; margin-top: 1px;
+    accent-color: var(--green-600); cursor: pointer;
+  }
+  .consent label { margin: 0; font-weight: 500; font-size: 13px; color: var(--ink); line-height: 1.45; }
+
+  .err {
+    display: none; color: var(--danger); font-size: 12.5px; margin-top: 6px; font-weight: 500;
+  }
+  .err.show { display: block; }
+
+  /* button */
+  .submit {
+    width: 100%; margin-top: 8px;
+    font-family: "Poppins", sans-serif; font-weight: 700; font-size: 16.5px;
+    color: #fff; cursor: pointer;
+    border: none; border-radius: 13px;
+    padding: 15px 16px;
+    background: linear-gradient(180deg, #25d366, #1aa851);
+    box-shadow: 0 12px 26px rgba(26, 168, 81, 0.34);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: transform .08s ease, box-shadow .15s;
+  }
+  .submit:active { transform: translateY(1px) scale(0.995); }
+  .submit svg { width: 22px; height: 22px; }
+
+  .hint {
+    text-align: center; font-size: 12px; color: var(--muted);
+    margin-top: 12px; line-height: 1.5;
+  }
+
+  .foot {
+    text-align: center; color: rgba(247,244,234,0.6);
+    font-size: 12px; margin-top: 26px;
+  }
+  .foot strong { color: var(--gold-300); font-weight: 600; }
+
+  @media (max-width: 360px) {
+    .row2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="crest">⚽</div>
+      <span class="kicker">Academy calcio estiva</span>
+      <h1>Boiardo <span class="gold">Individual&nbsp;Lab</span></h1>
+      <p>Allenamento individuale per crescere tecnica, gambe e testa. Prenota il tuo posto.</p>
+    </header>
+
+    <main class="card">
+      <h2>Modulo di prenotazione</h2>
+      <p class="lead">Compila i campi: alla conferma si aprirà WhatsApp con il messaggio già pronto da inviare.</p>
+
+      <form id="bookingForm" novalidate>
+        <div class="field">
+          <label for="annata">Annata dell'atleta <span class="req">*</span></label>
+          <select id="annata" name="annata" required>
+            <option value="" disabled selected hidden>Seleziona l'annata…</option>
+            <option value="2010">2010</option>
+            <option value="2011">2011</option>
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+          </select>
+          <div class="err" data-for="annata">Seleziona l'annata.</div>
+        </div>
+
+        <div class="field">
+          <label for="atleta">Nome dell'atleta <span class="req">*</span></label>
+          <input type="text" id="atleta" name="atleta" autocomplete="off" placeholder="Nome e cognome" required />
+          <div class="err" data-for="atleta">Inserisci il nome dell'atleta.</div>
+        </div>
+
+        <div class="field">
+          <label for="genitore">Genitore / Tutore <span class="req">*</span></label>
+          <input type="text" id="genitore" name="genitore" autocomplete="name" placeholder="Nome e cognome" required />
+          <div class="err" data-for="genitore">Inserisci il nome del genitore o tutore.</div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="telefono">Telefono <span class="req">*</span></label>
+            <input type="tel" id="telefono" name="telefono" inputmode="tel" autocomplete="tel" placeholder="Es. 333 1234567" required />
+            <div class="err" data-for="telefono">Inserisci un recapito telefonico.</div>
+          </div>
+          <div class="field">
+            <label for="email">Email <span class="opt">(facoltativa)</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" placeholder="nome@email.it" />
+            <div class="err" data-for="email">Controlla l'indirizzo email.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="formula">Formula <span class="req">*</span></label>
+          <select id="formula" name="formula" required>
+            <option value="" disabled selected hidden>Scegli la formula…</option>
+            <option value="15 € — sessione singola">15 € — sessione singola</option>
+            <option value="100 € — pacchetto">100 € — pacchetto</option>
+            <option value="Da definire">Da definire</option>
+          </select>
+          <div class="err" data-for="formula">Scegli una formula.</div>
+        </div>
+
+        <div class="field">
+          <label for="note">Note <span class="opt">(facoltative)</span></label>
+          <textarea id="note" name="note" placeholder="Disponibilità, ruolo, esigenze particolari…"></textarea>
+        </div>
+
+        <div class="field">
+          <div class="consent">
+            <input type="checkbox" id="consenso" name="consenso" required />
+            <label for="consenso">Sono il genitore / tutore dell'atleta e acconsento alla sua partecipazione e al contatto via WhatsApp per la prenotazione. <span class="req">*</span></label>
+          </div>
+          <div class="err" data-for="consenso">È necessario il consenso del genitore o tutore.</div>
+        </div>
+
+        <button type="submit" class="submit">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-.806zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          Prenota su WhatsApp
+        </button>
+
+        <p class="hint">Nessun pagamento online. La prenotazione viene gestita via WhatsApp con l'organizzazione.</p>
+      </form>
+    </main>
+
+    <p class="foot">Boiardo <strong>Individual Lab</strong> · Academy calcio estiva</p>
+  </div>
+
+<script>
+  (function () {
+    "use strict";
+    var WHATSAPP_NUMBER = "393385617138";
+    var form = document.getElementById("bookingForm");
+
+    function showErr(name, on) {
+      var el = form.querySelector('.err[data-for="' + name + '"]');
+      if (el) el.classList.toggle("show", !!on);
+    }
+
+    function emailValid(v) {
+      if (!v) return true; // optional
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+
+    function val(id) {
+      var el = document.getElementById(id);
+      return el ? el.value.trim() : "";
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var annata = val("annata");
+      var atleta = val("atleta");
+      var genitore = val("genitore");
+      var telefono = val("telefono");
+      var email = val("email");
+      var formula = val("formula");
+      var note = val("note");
+      var consenso = document.getElementById("consenso").checked;
+
+      var ok = true;
+      function need(name, cond) { showErr(name, !cond); if (!cond) ok = false; }
+
+      need("annata", annata !== "");
+      need("atleta", atleta !== "");
+      need("genitore", genitore !== "");
+      need("telefono", telefono !== "");
+      need("email", emailValid(email));
+      need("formula", formula !== "");
+      need("consenso", consenso);
+
+      if (!ok) {
+        var firstErr = form.querySelector(".err.show");
+        if (firstErr) firstErr.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+
+      var lines = [
+        "Ciao! Vorrei prenotare il *Boiardo Individual Lab* ⚽",
+        "",
+        "• Annata: " + annata,
+        "• Atleta: " + atleta,
+        "• Genitore/Tutore: " + genitore,
+        "• Telefono: " + telefono
+      ];
+      if (email) lines.push("• Email: " + email);
+      lines.push("• Formula: " + formula);
+      if (note) lines.push("• Note: " + note);
+      lines.push("");
+      lines.push("Confermo di essere il genitore/tutore e di acconsentire alla partecipazione.");
+
+      var text = lines.join("\n");
+      var url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text);
+      window.location.href = url;
+    });
+
+    // clear error as the user fixes a field
+    ["annata", "atleta", "genitore", "telefono", "email", "formula"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", function () { showErr(id, false); });
+      if (el) el.addEventListener("change", function () { showErr(id, false); });
+    });
+    document.getElementById("consenso").addEventListener("change", function () { showErr("consenso", false); });
+  })();
+</script>
+</body>
+</html>
