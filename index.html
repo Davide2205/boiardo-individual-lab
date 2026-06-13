@@ -367,7 +367,8 @@
 
     /* ---------- backend (availability) ---------- */
     function availUrl() {
-      return CONFIG.endpoint + (CONFIG.endpoint.indexOf("?") > -1 ? "&" : "?") + "action=availability";
+      // _=timestamp evita che il browser serva una disponibilità in cache (stantia)
+      return CONFIG.endpoint + (CONFIG.endpoint.indexOf("?") > -1 ? "&" : "?") + "action=availability&_=" + Date.now();
     }
     function jsonp(url) {
       return new Promise(function (resolve, reject) {
@@ -383,7 +384,7 @@
     }
     function fetchCounts() {
       // 1) prova fetch JSON; 2) fallback JSONP (a prova di CORS)
-      return fetch(availUrl(), { method: "GET" })
+      return fetch(availUrl(), { method: "GET", cache: "no-store" })
         .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
         .then(function (j) { return (j && j.counts) || {}; })
         .catch(function () { return jsonp(availUrl()).then(function (j) { return (j && j.counts) || {}; }); });
@@ -473,7 +474,7 @@
       }).then(function (r) { return r.json(); });
     }
     function checkExists(clientId) {
-      var u = CONFIG.endpoint + (CONFIG.endpoint.indexOf("?") > -1 ? "&" : "?") + "action=check&clientId=" + encodeURIComponent(clientId);
+      var u = CONFIG.endpoint + (CONFIG.endpoint.indexOf("?") > -1 ? "&" : "?") + "action=check&clientId=" + encodeURIComponent(clientId) + "&_=" + Date.now();
       return jsonp(u).then(function (j) { return !!(j && j.exists); });
     }
     function submitBooking(payload) {
