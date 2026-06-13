@@ -140,7 +140,12 @@
     border-radius: 12px; padding: 12px 13px;
   }
   .consent input[type="checkbox"] {
+    /* la regola globale mette appearance:none su tutti gli input: qui ripristino
+       la checkbox nativa, altrimenti non mostra il segno di spunta */
+    appearance: auto; -webkit-appearance: checkbox;
     width: 22px; height: 22px; min-width: 22px; margin-top: 1px;
+    padding: 0; border: none; border-radius: 0; background: none;
+    flex: 0 0 auto;
     accent-color: var(--green-600); cursor: pointer;
   }
   .consent label { margin: 0; font-weight: 500; font-size: 13px; color: var(--ink); line-height: 1.45; }
