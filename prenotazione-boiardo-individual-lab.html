@@ -547,7 +547,12 @@
 
     function showSuccess(v) {
       $("waBtn").setAttribute("href", buildWaUrl(v));
-      $("doneSess").innerHTML = "<b>" + selected.full + "</b><br>" + v.atleta + " · annata " + v.annata + " · " + v.formula;
+      var sess = $("doneSess");
+      sess.innerHTML = "";
+      var b = document.createElement("b"); b.textContent = selected.full;
+      sess.appendChild(b);
+      sess.appendChild(document.createElement("br"));
+      sess.appendChild(document.createTextNode(v.atleta + " · annata " + v.annata + " · " + v.formula));
       $("formView").style.display = "none";
       $("doneView").style.display = "block";
       $("card").scrollIntoView({ behavior: "smooth", block: "start" });
