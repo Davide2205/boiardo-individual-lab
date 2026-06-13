@@ -17,6 +17,13 @@ var SLOT_DOWS = [2, 3];           // 2 = martedì, 3 = mercoledì (Date.getDay)
 var SLOT_KEY_RE = /^\d{4}-\d{2}-\d{2}_1830$/;
 
 function doGet(e) {
+  var action = (e && e.parameter && e.parameter.action) || 'availability';
+  if (action === 'check') {
+    // serve al frontend per capire se una prenotazione è andata a buon fine
+    // anche quando non riesce a leggere la risposta della POST (CORS cross-origin).
+    var cid = String((e.parameter && e.parameter.clientId) || '').trim();
+    return reply({ ok: true, exists: cid ? clientExists(getSheet(), cid) : false }, e);
+  }
   return reply({ ok: true, capacity: CAPACITY, counts: getCounts() }, e);
 }
 
@@ -49,6 +56,14 @@ function doPost(e) {
     }
 
     var sheet = getSheet();
+
+    // idempotenza: se questo clientId è già stato registrato (es. retry dopo
+    // una risposta non leggibile), non creare una seconda riga.
+    var clientId = String(data.clientId || '').trim();
+    if (clientId && clientExists(sheet, clientId)) {
+      return reply({ ok: true, duplicate: true, remaining: Math.max(0, CAPACITY - countForSlot(sheet, data.slotKey)) }, e);
+    }
+
     var count = countForSlot(sheet, data.slotKey);
     if (count >= CAPACITY) {
       return reply({ ok: false, error: 'full', remaining: 0 }, e);
@@ -57,17 +72,19 @@ function doPost(e) {
     sheet.appendRow([
       new Date(),
       data.slotKey,
-      String(data.dateLabel || ''),
-      String(data.dayLabel || ''),
+      safeCell(data.dateLabel),
+      safeCell(data.dayLabel),
       '18:30-19:30',
-      String(data.annata),
-      String(data.atleta),
-      String(data.genitore),
+      safeCell(data.annata),
+      safeCell(data.atleta),
+      safeCell(data.genitore),
       "'" + String(data.telefono),     // apostrofo: il foglio lo tiene come testo
-      String(data.email || ''),
-      String(data.formula),
-      String(data.note || '')
+      safeCell(data.email),
+      safeCell(data.formula),
+      safeCell(data.note),
+      clientId
     ]);
+    SpreadsheetApp.flush();
 
     return reply({ ok: true, remaining: CAPACITY - (count + 1) }, e);
   } catch (err) {
@@ -85,7 +102,7 @@ function getSheet() {
   if (!sh) {
     sh = ss.insertSheet(SHEET_NAME);
     sh.appendRow(['Timestamp', 'SlotKey', 'Data', 'Giorno', 'Orario', 'Annata',
-      'Atleta', 'Genitore/Tutore', 'Telefono', 'Email', 'Formula', 'Note']);
+      'Atleta', 'Genitore/Tutore', 'Telefono', 'Email', 'Formula', 'Note', 'ClientId']);
     sh.setFrozenRows(1);
   }
   return sh;
@@ -112,6 +129,21 @@ function countForSlot(sheet, slotKey) {
   var n = 0;
   for (var i = 0; i < keys.length; i++) if (keys[i][0] === slotKey) n++;
   return n;
+}
+
+function clientExists(sheet, clientId) {
+  var last = sheet.getLastRow();
+  if (last < 2) return false;
+  var ids = sheet.getRange(2, 13, last - 1, 1).getValues(); // colonna M = ClientId
+  for (var i = 0; i < ids.length; i++) if (String(ids[i][0]) === clientId) return true;
+  return false;
+}
+
+// anti CSV/formula injection: se un campo testuale inizia con = + - @ (o tab/cr),
+// lo prefissa con un apostrofo così il foglio lo tratta come testo, non formula.
+function safeCell(v) {
+  var s = (v == null) ? '' : String(v);
+  return /^[=+\-@\t\r]/.test(s) ? ("'" + s) : s;
 }
 
 function validSlot(key) {

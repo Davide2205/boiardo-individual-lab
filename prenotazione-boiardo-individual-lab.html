@@ -436,7 +436,7 @@
       else if (availMode === "none") noteEl.textContent = "";
       else noteEl.textContent = "Capienza " + CONFIG.capacity + " atleti per sessione.";
       // se lo slot selezionato è diventato pieno, deseleziona
-      if (selected && badgeFor(selected.key).full) selected = null;
+      if (selected && badgeFor(selected.key).full) { selected = null; $("slot").value = ""; }
     }
 
     function selectSlot(s, div) {
@@ -456,15 +456,43 @@
     function emailValid(v) { return !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
     function val(id) { var el = $(id); return el ? el.value.trim() : ""; }
 
-    /* ---------- booking ---------- */
-    function postBooking(payload) {
-      if (!CONFIG.endpoint) return Promise.resolve({ ok: true, degraded: true });
+    /* ---------- booking ----------
+       Apps Script da GitHub Pages: la POST scrive la riga, ma la risposta cross-origin
+       può non essere leggibile (CORS sul redirect). Per non mostrare un falso errore
+       (con conseguente doppia prenotazione), ogni tentativo porta un clientId univoco:
+       il server deduplica e, se non riusciamo a leggere la risposta, verifichiamo via
+       JSONP (?action=check) se la prenotazione risulta comunque registrata. */
+    function genClientId() { return "c-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10); }
+
+    function postOnce(payload) {
       return fetch(CONFIG.endpoint, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload),
         redirect: "follow"
       }).then(function (r) { return r.json(); });
+    }
+    function checkExists(clientId) {
+      var u = CONFIG.endpoint + (CONFIG.endpoint.indexOf("?") > -1 ? "&" : "?") + "action=check&clientId=" + encodeURIComponent(clientId);
+      return jsonp(u).then(function (j) { return !!(j && j.exists); });
+    }
+    function submitBooking(payload) {
+      if (!CONFIG.endpoint) return Promise.resolve({ ok: true, degraded: true });
+      return postOnce(payload).catch(function () {
+        // risposta non leggibile o rete: la scrittura potrebbe essere comunque avvenuta
+        return checkExists(payload.clientId).then(function (exists) {
+          if (exists) return { ok: true, recovered: true };
+          // non risulta: riprova una volta (idempotente lato server), poi riverifica
+          return postOnce(payload).catch(function () { return null; }).then(function () {
+            return checkExists(payload.clientId).then(function (ex2) {
+              return ex2 ? { ok: true, recovered: true }
+                : { ok: false, error: "Non sono riuscito a registrare la prenotazione. Riprova, oppure scrivici su WhatsApp." };
+            });
+          });
+        }).catch(function () {
+          return { ok: false, error: "Backend non raggiungibile. Riprova, oppure scrivici su WhatsApp." };
+        });
+      });
     }
 
     function buildWaUrl(v) {
@@ -521,13 +549,14 @@
       }
 
       var payload = {
+        clientId: genClientId(),
         slotKey: selected.key, dateLabel: cap(selected.day) + " " + selected.date, dayLabel: cap(selected.day),
         annata: v.annata, atleta: v.atleta, genitore: v.genitore, telefono: v.telefono,
         email: v.email, formula: v.formula, note: v.note, consenso: consenso, website: v.website
       };
 
       setSubmitting(true);
-      postBooking(payload).then(function (res) {
+      submitBooking(payload).then(function (res) {
         setSubmitting(false);
         if (!res || res.ok !== true) {
           if (res && res.error === "full") {
